@@ -18,7 +18,6 @@ class ViewController: UIViewController {
     @IBOutlet var blueSlider: UISlider!
     
     @IBOutlet var redValue: UILabel!
-    
     @IBOutlet var greenValue: UILabel!
     @IBOutlet var blueValue: UILabel!
     
@@ -49,7 +48,6 @@ class ViewController: UIViewController {
     @IBAction func changeBlueValue() {
         blueValue.text = String(format: "%0.2f", blueSlider.value)
         setViewColor()
-
     }
     
     private func setViewColor() {
