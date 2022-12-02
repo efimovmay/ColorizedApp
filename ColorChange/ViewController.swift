@@ -27,26 +27,29 @@ class ViewController: UIViewController {
         
         colorView.layer.cornerRadius = 10
         setViewColor()
+        
+        redValue.text = String(format: "%0.2f", redSlider.value)
+        greenValue.text = String(format: "%0.2f", greenSlider.value)
+        blueValue.text = String(format: "%0.2f", blueSlider.value)
 
     }
 
     // MARK: - IBActions
     
     @IBAction func changeRedValue() {
-        
-        redValue.text = "\(redSlider.value)"
+        redValue.text = String(format: "%0.2f", redSlider.value)
         setViewColor()
     }
     
     @IBAction func changeGreenValue() {
-        
+        greenValue.text = String(format: "%0.2f", greenSlider.value)
         setViewColor()
     }
     
     @IBAction func changeBlueValue() {
-        
+        blueValue.text = String(format: "%0.2f", blueSlider.value)
         setViewColor()
-        
+
     }
     
     private func setViewColor() {
