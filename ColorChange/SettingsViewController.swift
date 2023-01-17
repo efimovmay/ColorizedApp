@@ -35,35 +35,54 @@ final class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        redTextFeeld.delegate = self
+        greenTextFeeld.delegate = self
+        blueTextFeeld.delegate = self
+        
         colorView.layer.cornerRadius = 10
         colorView.backgroundColor = colorHomeScreen
+        
         sendColorInSlider()
+        sendColorFromSliders(redSlider)
+        sendColorFromSliders(greenSlider)
+        sendColorFromSliders(blueSlider)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
     }
 
     // MARK: - IBActions
     
-    @IBAction func rgbSlider(_ sender: UISlider) {
-        setViewColor()
-        switch sender {
-        case redSlider:
-            redLabel.text = string(from: redSlider)
-            redTextFeeld.text = string(from: redSlider)
-        case greenSlider:
-            greenLabel.text = string(from: greenSlider)
-            greenTextFeeld.text = string(from: greenSlider)
-        default:
-            blueLabel.text = string(from: blueSlider)
-            blueTextFeeld.text = string(from: blueSlider)
-        }
-    }
-    
     @IBAction func doneButtonPressed(_ sender: Any) {
         guard let newColor = colorView.backgroundColor else { return }
         delegate.setNewBackground(newColor)
-        self.dismiss(animated: true)
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func sendColorFromSliders(_ sender: UISlider) {
+        setViewColor()
+        switch sender {
+        case redSlider:
+            redLabel.text = getString(from: redSlider)
+            redTextFeeld.text = getString(from: redSlider)
+        case greenSlider:
+            greenLabel.text = getString(from: greenSlider)
+            greenTextFeeld.text = getString(from: greenSlider)
+        default:
+            blueLabel.text = getString(from: blueSlider)
+            blueTextFeeld.text = getString(from: blueSlider)
+        }
     }
     
     //MARK: - Private method
+   
+    private func sendColorInSlider () {
+        let color = CIColor(color: colorHomeScreen)
+        redSlider.value = Float(color.red)
+        greenSlider.value = Float(color.green)
+        blueSlider.value = Float(color.blue)
+    }
     
     private func setViewColor() {
         colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value),
@@ -72,26 +91,37 @@ final class SettingsViewController: UIViewController {
                                             alpha: 1.0)
     }
     
-    
-    private func string(from slider: UISlider) -> String {
+    private func getString(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
     }
-    
-    private func sendColorInSlider () {
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-
-        colorHomeScreen.getRed(&red,
-                               green: &green,
-                               blue: &blue,
-                               alpha: &alpha)
-        
-        redSlider.value = Float(red)
-        greenSlider.value = Float(green)
-        blueSlider.value = Float(blue)
-    }
-
 }
 
+
+//MARK: - Extention TextFeeldDelegate
+
+extension SettingsViewController: UITextFieldDelegate {
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let inputText = textField.text else { return }
+        guard var newValue = Float(inputText) else { return }
+        
+        if newValue > 1.0 {
+            newValue = 1.0
+        }
+        
+        switch textField {
+        case redTextFeeld:
+            redSlider.value = newValue
+            redLabel.text = getString(from: redSlider)
+        case greenTextFeeld:
+            greenSlider.value = newValue
+            greenLabel.text = getString(from: greenSlider)
+        default:
+            blueSlider.value = newValue
+            blueLabel.text = getString(from: blueSlider)
+        }
+        
+        textField.text = String(format: "%.2f", newValue)
+        setViewColor()
+    }
+}
